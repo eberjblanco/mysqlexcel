@@ -42,11 +42,13 @@ class HomeController extends Controller
         }
 
         
-        $cadena = "SHOW FULL TABLES FROM ".$Bd;
+        $cadena = "SHOW  TABLES FROM ".$Bd;
         $TablasTemp = DB::select($cadena);
         $seg2=0;
+        $Aux = 'Tables_in_'.$Bd;
+        
         foreach ($TablasTemp as $key) {
-            if ($key->Tables_in_scannerdiv==$tabla) {
+            if ($key->$Aux==$tabla) {
                 $seg2=1;
             }   
         }
