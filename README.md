@@ -7,7 +7,7 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
-## Como Instalar
+## Como Instalar el Proyecto
 
 1. git clone en el servidor
 2. Composer Install
