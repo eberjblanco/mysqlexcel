@@ -42,10 +42,12 @@ class HomeController extends Controller
         }
 
         
-        $cadena = "SHOW  TABLES FROM ".$Bd;
+        $cadena = "SHOW TABLES FROM ".$Bd;
         $TablasTemp = DB::select($cadena);
         $seg2=0;
         $Aux = 'Tables_in_'.$Bd;
+
+        
         
         foreach ($TablasTemp as $key) {
             if ($key->$Aux==$tabla) {
@@ -60,19 +62,24 @@ class HomeController extends Controller
 
         //Obtener campos
 
-        $cadena = "SHOW COLUMNS  FROM ".$Bd.".".$tabla;
+        $cadena = "SHOW FULL  COLUMNS  FROM ".$Bd.".".$tabla;
         $CamposTempAux = DB::select($cadena);
         $seg3=0;
 
+        
+
         $totalTabla = count($CamposTempAux);
         $CamposTemp = [];
-        
+        $PlantillaTime=['date','dateTime','timestamp','time','year'];
+        $camposFec=[];
         for ($c=0; $c < $totalTabla; $c++) {
-            $cellValue = $CamposTempAux[$c]->Field;
+            $cellValue = array('field' => $CamposTempAux[$c]->Field,'type' => $CamposTempAux[$c]->Type, );
             array_push($CamposTemp,$cellValue);
+            $clave = array_search($CamposTempAux[$c]->Type, $PlantillaTime); 
+            if ($clave > 0) {
+                array_push($camposFec,$c);;
+            }
         }
-
-       
 
         $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader('Xlsx');
         $spreadsheet = new Spreadsheet();
@@ -94,7 +101,21 @@ class HomeController extends Controller
             $fila=[];      
             for ($c=1; $c <= count($CamposAr); $c++) {                
                 $cellValue = $spreadsheet->getActiveSheet()->getCellByColumnAndRow($c, $r)->getValue();                 
-                array_push($fila,$cellValue);    
+               
+                //verificas fecha
+                    $clave = array_search($c, $camposFec); 
+                    if ($clave > 0) {
+                        $mystring = $cellValue;
+                        $findme   = '-';
+                        $pos = strpos($mystring, $findme);
+                        if ($pos === false) {
+                            $data = array('mensaje' => 'Error de datos en columna de Fecha (Col:'.$c.',Fil:'.$r.'). Puede sustituir por 0000-00-00');
+                            return view('volver', $data);
+                        }
+                        
+                    }   
+
+                array_push($fila,$cellValue); 
             }
             array_push($info,$fila);    
         }
@@ -124,6 +145,8 @@ class HomeController extends Controller
         $Bd = $request->Bd;
         $tabla = $request->tabla;
 
+       
+
         \Config::set("database.connections.mysql2", array_merge(
             \Config::get("database.connections.mysql2"),
             [
@@ -135,16 +158,18 @@ class HomeController extends Controller
         
         $cabeza="INSERT INTO ". $tabla;
         $campos="";
+
+       
          
         for ($i=1; $i < count($CamposTemp); $i++) { 
             if ($i==count($CamposTemp)-1) {
-                $campos = $campos . $CamposTemp[$i];
+                $campos = $campos . $CamposTemp[$i]->field;
             }else{
-                $campos = $campos . $CamposTemp[$i].",";
+                $campos = $campos . $CamposTemp[$i]->field.",";
             }
         }
-
-     
+       
+        
 
         for ($r=0; $r < $totalArchivo; $r++) { 
             $valores="";

@@ -12,6 +12,8 @@
     <h4>* Solo se permiten archivos excel</h4>
     <h4>* La  columna A en el archivo excel debe ser el autonomérico.No deje casillas en blanco en esta columna</h4>
     <h4>* La  Fila 1 en el archivo excel deben ser los nombres de los campos. Deben ser iguales a los nombres de la tabla.</h4>
+    <h4>* El Archivo Excel debe tener una sola pestaña</h4>
+    <h4>* Si va a subir fechas debe cerciorarse que la columna en excel este formateada en "texto" y el formato de la fecha debe ser YYYY-MM-DD</h4>
 
     <form action="{{ route('enviarArchivo') }}" enctype="multipart/form-data" method="POST">
         @csrf

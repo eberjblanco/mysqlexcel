@@ -27,8 +27,8 @@
         @for($i=0; $i<$totalTabla; $i++)
            
             <tr>
-                <td>{{ $CamposTemp[$i]}}</td>
-                @if($CamposAr[$i] != $CamposTemp[$i])
+                <td>{{ $CamposTemp[$i]['field']}}</td>
+                @if($CamposAr[$i] != $CamposTemp[$i]['field'])
                     <td style="background: red">{{ $CamposAr[$i]}}</td>
                     <?php
                         $seg =1;
